@@ -169,7 +169,7 @@ public class ZenTokener extends TokenStream {
      * @throws IOException shouldn't happen
      */
     public ZenTokener(String contents, IZenCompileEnvironment environment, String fileNameFallback, boolean ignoreBracketErrors) throws IOException {
-        super(new StringReader(contents), DFA, "");
+        super(new StringReader(contents), DFA, fileNameFallback == null ? "Unknown" : fileNameFallback);
         
         this.ignoreBracketErrors = ignoreBracketErrors;
         this.environment = environment;

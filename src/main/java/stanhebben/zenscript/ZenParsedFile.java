@@ -8,6 +8,7 @@ import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.symbols.*;
 import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.util.StringUtil;
 
 import java.util.*;
 
@@ -92,7 +93,7 @@ public class ZenParsedFile {
                     nameSoFar.append(part);
                     type = environment.getValue(part, imprt.getPosition());
                     if(type == null) {
-                        environment.error(imprt.getPosition(), "could not find package " + type);
+                        environment.error(imprt.getPosition(), "could not find package " + StringUtil.join(name, "."));
                         break;
                     }
                 } else {
