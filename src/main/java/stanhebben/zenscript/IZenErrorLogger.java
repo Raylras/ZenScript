@@ -33,4 +33,17 @@ public interface IZenErrorLogger extends IZenLogger {
      * @param message  info message
      */
     void info(ZenPosition position, String message);
+
+    default void error(ZenPosition start, ZenPosition end, String message) {
+        error(start, message);
+    }
+
+    default void warning(ZenPosition start, ZenPosition end, String message) {
+        warning(start, message);
+    }
+
+    default void info(ZenPosition start, ZenPosition end, String message) {
+        info(start, message);
+    }
+
 }

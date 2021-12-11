@@ -385,9 +385,9 @@ public abstract class ParsedExpression {
                     }
                     builder.append('>');
                     if(!parser.ignoreBracketErrors) {
-                        parser.getEnvironment().getErrorLogger().error(start.getPosition(), "Could not resolve " + builder.toString());
+                        parser.getEnvironment().getErrorLogger().error(start.getPosition(), next.getPosition(), "Could not resolve " + builder.toString());
                     } else {
-                        parser.getEnvironment().getErrorLogger().info(start.getPosition(), "Could not resolve " + builder.toString());
+                        parser.getEnvironment().getErrorLogger().info(start.getPosition(), next.getPosition(), "Could not resolve " + builder.toString());
                     }
                     return new ParsedExpressionInvalid(start.getPosition());
                 } else {
