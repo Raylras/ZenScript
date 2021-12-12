@@ -236,7 +236,7 @@ public class TokenStream implements Iterator<Token> {
             if(dfa.finals[state] != CompiledDFA.NOFINAL) {
                 if(state == 0)
                     throw new TokenException(file, line, lineOffset, (char) nextChar);
-                next = process(new Token(value.toString(), dfa.finals[state], new ZenPosition(file, tLine, tLineOffset, fileNameFallback)));
+                next = process(new Token(value.toString(), dfa.finals[state], new ZenPosition(file, tLine, tLineOffset, fileNameFallback), new ZenPosition(file, line, lineOffset, fileNameFallback)));
             } else {
                 if(nextChar < 0 && value.length() == 0) {
                     return; // happens on comments at the end of files

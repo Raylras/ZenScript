@@ -191,7 +191,7 @@ public class ZenTokener extends TokenStream {
     @Override
     public Token process(Token token) {
         if(token.getType() == T_ID && KEYWORDS.containsKey(token.getValue())) {
-            return new Token(token.getValue(), KEYWORDS.get(token.getValue()), token.getPosition());
+            return new Token(token.getValue(), KEYWORDS.get(token.getValue()), token.getStart(), token.getEnd());
         }
         return token;
     }

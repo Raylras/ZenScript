@@ -128,7 +128,22 @@ public class GenericGlobalEnvironment implements IEnvironmentGlobal {
     public void info(String message) {
         registry.getErrorLogger().info(message);
     }
-    
+
+    @Override
+    public void error(ZenPosition start, ZenPosition end, String message) {
+        registry.getErrorLogger().error(start, end, message);
+    }
+
+    @Override
+    public void warning(ZenPosition start, ZenPosition end, String message) {
+        registry.getErrorLogger().warning(start, end, message);
+    }
+
+    @Override
+    public void info(ZenPosition start, ZenPosition end, String message) {
+        registry.getErrorLogger().info(start, end, message);
+    }
+
     @Override
     public ZenType getType(Type type) {
         return registry.getTypes().getType(type);

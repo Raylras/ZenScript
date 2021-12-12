@@ -9,7 +9,8 @@ import stanhebben.zenscript.util.ZenPosition;
  */
 public class Token {
     
-    private final ZenPosition position;
+    private final ZenPosition start;
+    private final ZenPosition end;
     private final String value;
     private final int type;
     
@@ -18,18 +19,28 @@ public class Token {
      *
      * @param value    token string value
      * @param type     token type
-     * @param position token position
+     * @param start    start position of token
+     * @param end      end position of token
      */
-    public Token(String value, int type, ZenPosition position) {
+    public Token(String value, int type, ZenPosition start, ZenPosition end) {
         this.value = value;
         this.type = type;
-        this.position = position;
+        this.start = start;
+        this.end = end;
     }
     
     public ZenPosition getPosition() {
-        return position;
+        return start;
     }
-    
+
+    public ZenPosition getStart() {
+        return start;
+    }
+
+    public ZenPosition getEnd() {
+        return end;
+    }
+
     /**
      * Returns the string value of this token.
      *
@@ -50,6 +61,6 @@ public class Token {
     
     @Override
     public String toString() {
-        return position.getLine() + ":" + position.getLineOffset() + " (" + type + ") " + value;
+        return start.getLine() + ":" + start.getLineOffset() + " (" + type + ") " + value;
     }
 }

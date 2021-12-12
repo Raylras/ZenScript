@@ -62,45 +62,44 @@ public class ZenParsedFile {
         while(tokener.peek() != null && tokener.peek().getType() == T_IMPORT) {
             Token start = tokener.next();
             
-            List<String> importName = new ArrayList<>();
+            List<Token> importName = new ArrayList<>();
             Token tName = tokener.required(T_ID, "identifier expected");
-            importName.add(tName.getValue());
+            importName.add(tName);
             
             while(tokener.optional(T_DOT) != null) {
                 Token tNamePart = tokener.required(T_ID, "identifier expected");
-                importName.add(tNamePart.getValue());
+                importName.add(tNamePart);
             }
-            
-            String rename = null;
+
+            Token tRename = null;
             if(tokener.optional(T_AS) != null) {
-                Token tRename = tokener.required(T_ID, "identifier expected");
-                rename = tRename.getValue();
+                tRename = tokener.required(T_ID, "identifier expected");
             }
             
-            tokener.required(T_SEMICOLON, "; expected");
+            Token semicolon = tokener.required(T_SEMICOLON, "; expected");
             
-            imports.add(new Import(start.getPosition(), importName, rename));
+            imports.add(new Import(start.getPosition(), semicolon.getPosition(), importName, tRename));
         }
         
         for(Import imprt : imports) {
-            List<String> name = imprt.getName();
+            List<Token> name = imprt.getName();
             IPartialExpression type = null;
             
             StringBuilder nameSoFar = new StringBuilder();
             
-            for(String part : name) {
+            for(Token part : name) {
                 if(type == null) {
                     nameSoFar.append(part);
-                    type = environment.getValue(part, imprt.getPosition());
+                    type = environment.getValue(part.getValue(), imprt.getStart());
                     if(type == null) {
-                        environment.error(imprt.getPosition(), "could not find package " + StringUtil.join(name, "."));
+                        environment.error(part.getStart(), part.getEnd(), "could not find package " + part.getValue());
                         break;
                     }
                 } else {
                     nameSoFar.append('.').append(part);
-                    type = type.getMember(imprt.getPosition(), environment, part);
+                    type = type.getMember(imprt.getStart(), environment, part.getValue());
                     if(type == null) {
-                        environment.error(imprt.getPosition(), "could not find type or package " + nameSoFar);
+                        environment.error(imprt.getStart(), "could not find type or package " + nameSoFar);
                         break;
                     }
                 }
@@ -109,12 +108,12 @@ public class ZenParsedFile {
             if(type != null) {
                 IZenSymbol symbol = type.toSymbol();
                 if(symbol == null) {
-                    environmentScript.error(imprt.getPosition(), "Not a valid type");
+                    environmentScript.error(imprt.getStart(), "Not a valid type");
                 } else {
-                    environmentScript.putValue(imprt.getRename(), type.toSymbol(), imprt.getPosition());
+                    environmentScript.putValue(imprt.getRename().getValue(), type.toSymbol(), imprt.getStart());
                 }
             } else {
-                environmentScript.putValue(imprt.getRename(), new SymbolType(ZenType.ANY), imprt.getPosition());
+                environmentScript.putValue(imprt.getRename().getValue(), new SymbolType(ZenType.ANY), imprt.getStart());
             }
         }
         
