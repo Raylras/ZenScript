@@ -42,7 +42,7 @@ public abstract class Statement {
             case T_VAR:
             case T_VAL: {
                 Token start = parser.next();
-                String name = parser.required(T_ID, "identifier expected").getValue();
+                Token name = parser.required(T_ID, "identifier expected");
 
                 ZenType type = null;
                 ParsedExpression initializer = null;

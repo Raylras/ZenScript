@@ -11,13 +11,13 @@ import static stanhebben.zenscript.ZenTokener.*;
 
 public class ParsedGlobalValue {
 	private final ZenPosition position;
-	private final String name;
+	private final Token name;
 	private final ZenType type;
 	private final ParsedExpression value;
 	private final String owner;
 	private final boolean global;
 	
-	ParsedGlobalValue(ZenPosition position, String name, ZenType type, ParsedExpression value, String owner, boolean global){
+	ParsedGlobalValue(ZenPosition position, Token name, ZenType type, ParsedExpression value, String owner, boolean global){
 		this.position = position;
 		this.name = name;
 		this.type = type;
@@ -27,7 +27,7 @@ public class ParsedGlobalValue {
         this.global = global;
     }
 
-	public String getName() {
+	public Token getName() {
 		return name;
 	}
 
@@ -53,7 +53,7 @@ public class ParsedGlobalValue {
 		Token startingPoint = parser.next();
 		
 		//Name ("globalName", "test")
-		String name = parser.required(T_ID, "Global value requires a name!").getValue();
+		Token name = parser.required(T_ID, "Global value requires a name!");
 		
 		//Type ("as type", "as IItemStack")
 		ZenType type = ZenType.ANY;

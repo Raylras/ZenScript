@@ -2,6 +2,7 @@ package stanhebben.zenscript.expression;
 
 import stanhebben.zenscript.compiler.*;
 import stanhebben.zenscript.definitions.ParsedFunctionArgument;
+import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.type.*;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.ZenPosition;
@@ -26,7 +27,7 @@ public class ExpressionJavaMethodCurled extends Expression {
         
         List<ParsedFunctionArgument> arguments = new ArrayList<>();
         for(int i = 0; i < method.getMethod().getParameterTypes().length; i++) {
-            arguments.add(new ParsedFunctionArgument("p" + i, environment.getType(method.getMethod().getGenericParameterTypes()[i])));
+            arguments.add(new ParsedFunctionArgument(new Token("p" + i, getType().getNumberType(), null, null), environment.getType(method.getMethod().getGenericParameterTypes()[i])));
         }
         
         this.type = new ZenTypeFunction(environment.getType(method.getMethod().getGenericReturnType()), arguments);

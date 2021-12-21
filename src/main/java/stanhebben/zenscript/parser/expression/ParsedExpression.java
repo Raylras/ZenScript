@@ -336,7 +336,7 @@ public abstract class ParsedExpression {
                 List<ParsedFunctionArgument> arguments = new ArrayList<>();
                 if(parser.optional(T_BRCLOSE) == null) {
                     do {
-                        String name = parser.required(T_ID, "identifier expected").getValue();
+                        Token name = parser.required(T_ID, "identifier expected");
                         ZenType type = ZenTypeAny.INSTANCE;
                         
                         if(parser.optional(T_AS) != null) {

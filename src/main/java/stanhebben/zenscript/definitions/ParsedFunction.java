@@ -16,15 +16,17 @@ import static stanhebben.zenscript.ZenTokener.*;
  */
 public class ParsedFunction {
 
-    private final ZenPosition position;
-    private final String name;
+    private final ZenPosition start;
+    private final ZenPosition end;
+    private final Token name;
     private final List<ParsedFunctionArgument> arguments;
     private final ZenType returnType;
     private final Statement[] statements;
     private final String signature;
 
-    public ParsedFunction(ZenPosition position, String name, List<ParsedFunctionArgument> arguments, ZenType returnType, Statement[] statements) {
-        this.position = position;
+    public ParsedFunction(ZenPosition start, ZenPosition end, Token name, List<ParsedFunctionArgument> arguments, ZenType returnType, Statement[] statements) {
+        this.start = start;
+        this.end = end;
         this.name = name;
         this.arguments = arguments;
         this.returnType = returnType;
@@ -56,7 +58,7 @@ public class ParsedFunction {
                 type = ZenType.read(parser, environment);
             }
 
-            arguments.add(new ParsedFunctionArgument(argName.getValue(), type));
+            arguments.add(new ParsedFunctionArgument(argName, type));
 
             while(parser.optional(T_COMMA) != null) {
                 Token argName2 = parser.required(T_ID, "identifier expected");
@@ -65,7 +67,7 @@ public class ParsedFunction {
                     type2 = ZenType.read(parser, environment);
                 }
 
-                arguments.add(new ParsedFunctionArgument(argName2.getValue(), type2));
+                arguments.add(new ParsedFunctionArgument(argName2, type2));
             }
 
             parser.required(T_BRCLOSE, ") expected");
@@ -79,25 +81,30 @@ public class ParsedFunction {
         parser.required(T_AOPEN, "{ expected");
 
         Statement[] statements;
+        Token tAClose = null;
         if(parser.optional(T_ACLOSE) != null) {
             statements = new Statement[0];
         } else {
             ArrayList<Statement> statementsAL = new ArrayList<>();
 
-            while(parser.optional(T_ACLOSE) == null) {
+            while((tAClose = parser.optional(T_ACLOSE)) == null) {
                 statementsAL.add(Statement.read(parser, environment, type));
             }
             statements = statementsAL.toArray(new Statement[statementsAL.size()]);
         }
 
-        return new ParsedFunction(tName.getPosition(), tName.getValue(), arguments, type, statements);
+        return new ParsedFunction(tName.getStart(), tAClose == null ? tName.getEnd() : tAClose.getEnd(), tName, arguments, type, statements);
     }
 
-    public ZenPosition getPosition() {
-        return position;
+    public ZenPosition getStart() {
+        return start;
     }
 
-    public String getName() {
+    public ZenPosition getEnd() {
+        return end;
+    }
+
+    public Token getName() {
         return name;
     }
 

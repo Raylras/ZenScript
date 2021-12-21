@@ -105,7 +105,7 @@ public class ZenModule {
             
             for(Map.Entry<String, ParsedFunction> function : script.getFunctions().entrySet()) {
                 ParsedFunction fn = function.getValue();
-                environmentScript.putValue(function.getKey(), new SymbolZenStaticMethod(script.getClassName(), fn.getName(), fn.getSignature(), fn.getArgumentTypes(), fn.getReturnType()), fn.getPosition());
+                environmentScript.putValue(function.getKey(), new SymbolZenStaticMethod(script.getClassName(), fn.getName().getValue(), fn.getSignature(), fn.getArgumentTypes(), fn.getReturnType()), fn.getStart());
             }
             for(Map.Entry<String, ParsedFunction> function : script.getFunctions().entrySet()) {
                 ParsedFunction fn = function.getValue();
@@ -117,7 +117,7 @@ public class ZenModule {
                 List<ParsedFunctionArgument> arguments = function.getValue().getArguments();
                 for(int i = 0, j = 0; i < arguments.size(); i++) {
                     ParsedFunctionArgument argument = arguments.get(i);
-                    methodEnvironment.putValue(argument.getName(), new SymbolArgument(i + j, argument.getType()), fn.getPosition());
+                    methodEnvironment.putValue(argument.getName().getValue(), new SymbolArgument(i + j, argument.getType()), fn.getStart());
                     if(argument.getType().isLarge())
                         ++j;
                 }
@@ -130,11 +130,11 @@ public class ZenModule {
                 if(function.getValue().getReturnType() != ZenType.VOID) {
                     if(statements.length > 0 && statements[statements.length - 1] instanceof StatementReturn) {
                         if(((StatementReturn) statements[statements.length - 1]).getExpression() != null) {
-                            fn.getReturnType().defaultValue(fn.getPosition()).compile(true, methodEnvironment);
+                            fn.getReturnType().defaultValue(fn.getStart()).compile(true, methodEnvironment);
                             methodOutput.returnType(fn.getReturnType().toASMType());
                         }
                     } else {
-                        fn.getReturnType().defaultValue(fn.getPosition()).compile(true, methodEnvironment);
+                        fn.getReturnType().defaultValue(fn.getStart()).compile(true, methodEnvironment);
                         methodOutput.returnType(fn.getReturnType().toASMType());
                     }
                 } else if(statements.length == 0 || !(statements[statements.length - 1] instanceof StatementReturn)) {

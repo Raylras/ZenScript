@@ -1,5 +1,6 @@
 package stanhebben.zenscript.definitions;
 
+import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.type.ZenType;
 
 /**
@@ -7,15 +8,15 @@ import stanhebben.zenscript.type.ZenType;
  */
 public class ParsedFunctionArgument {
 
-    private final String name;
+    private final Token name;
     private final ZenType type;
 
-    public ParsedFunctionArgument(String name, ZenType type) {
+    public ParsedFunctionArgument(Token name, ZenType type) {
         this.name = name;
         this.type = type;
     }
 
-    public String getName() {
+    public Token getName() {
         return name;
     }
 

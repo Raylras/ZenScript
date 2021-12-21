@@ -183,7 +183,11 @@ public class ZenTokener extends TokenStream {
     public IZenCompileEnvironment getEnvironment() {
         return environment;
     }
-    
+
+    public static HashMap<String, Integer> getKEYWORDS() {
+        return KEYWORDS;
+    }
+
     // ##################################
     // ### TokenStream implementation ###
     // ##################################

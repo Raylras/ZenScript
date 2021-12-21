@@ -111,7 +111,7 @@ public class ExpressionFunction extends Expression {
         EnvironmentMethodLambda environmentMethod = new EnvironmentMethodLambda(output, environmentClass, className);
         
         for(int i = 0, j = 0; i < arguments.size(); i++) {
-            environmentMethod.putValue(arguments.get(i).getName(), new SymbolArgument(i + 1 + j, arguments.get(i).getType()), getPosition());
+            environmentMethod.putValue(arguments.get(i).getName().getValue(), new SymbolArgument(i + 1 + j, arguments.get(i).getType()), getPosition());
             if(arguments.get(i).getType().isLarge())
                 j++;
         }

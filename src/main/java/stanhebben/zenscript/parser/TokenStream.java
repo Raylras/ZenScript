@@ -4,7 +4,10 @@ import stanhebben.zenscript.ZenParsedFile;
 import stanhebben.zenscript.util.ZenPosition;
 
 import java.io.*;
+import java.sql.ClientInfoStatus;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents a token stream. A token stream reads characters from a reader and
@@ -29,6 +32,8 @@ public class TokenStream implements Iterator<Token> {
     private LinkedList<Token> tokenMemory;
     private Stack<Integer> marks;
     private int tokenMemoryCurrent;
+
+    private List<Token> tokens;
     
     /**
      * Creates a token stream using the specified reader and DFA.
@@ -49,6 +54,7 @@ public class TokenStream implements Iterator<Token> {
         nextChar = this.reader.read();
         line = 1;
         lineOffset = 1;
+        tokens = new LinkedList<>();
         advance();
     }
     
@@ -202,6 +208,9 @@ public class TokenStream implements Iterator<Token> {
         do {
             advanceToken();
         } while(next != null && next.getType() < 0);
+        if (next != null) {
+            tokens.add(next);
+        }
     }
     
     /**
@@ -246,6 +255,17 @@ public class TokenStream implements Iterator<Token> {
         } catch(IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public List<Token> getTokens() {
+        return tokens;
+    }
+
+    public List<Token> getToken(int line, int lineOffset) {
+        return tokens.stream()
+                .filter(token -> token.getStart().getLine() <= line && line <= token.getEnd().getLine())
+                .filter(token -> token.getStart().getLineOffset() <= lineOffset && lineOffset <= token.getEnd().getLineOffset())
+                .collect(Collectors.toList());
     }
     
     // ////////////////////////

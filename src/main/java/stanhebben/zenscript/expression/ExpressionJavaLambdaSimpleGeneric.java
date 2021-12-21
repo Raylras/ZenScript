@@ -92,7 +92,7 @@ public class ExpressionJavaLambdaSimpleGeneric extends Expression {
             if(typeToPut == null)
                 typeToPut = environment.getType(method.getParameterTypes()[i]);
 
-            environmentMethod.putValue(arguments.get(i).getName(), new SymbolArgument(i + 1 + j, typeToPut), getPosition());
+            environmentMethod.putValue(arguments.get(i).getName().getValue(), new SymbolArgument(i + 1 + j, typeToPut), getPosition());
             if(typeToPut.isLarge())
                 j++;
         }

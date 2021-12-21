@@ -82,8 +82,8 @@ public class ParsedZenClass {
         ParsedFunction method = parsedMethod.method;
         methods.add(parsedMethod);
         if(!members.containsKey(method.getName())) {
-            members.put(method.getName(), new ZenNativeMember());
-            classEnvironment.putValue(method.getName(), position1 -> new ExpressionThis(position1, type).getMember(position1, classEnvironment, method.getName()), position);
+            members.put(method.getName().getValue(), new ZenNativeMember());
+            classEnvironment.putValue(method.getName().getValue(), position1 -> new ExpressionThis(position1, type).getMember(position1, classEnvironment, method.getName().getValue()), position);
         }
         parsedMethod.addToMember(members.get(method.getName()));
     }

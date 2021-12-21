@@ -8,7 +8,6 @@ import stanhebben.zenscript.parser.Token;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.symbols.*;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.StringUtil;
 
 import java.util.*;
 
@@ -33,13 +32,14 @@ public class ZenParsedFile {
     
     private final String filename;
     private final String classname;
+    private final ZenTokener tokener;
     private final List<Import> imports;
     private final Map<String, ParsedFunction> functions;
     private final Map<String, ParsedGlobalValue> globals = new LinkedHashMap<>();
     private final Map<String, ParsedZenClass> classes = new HashMap<>();
     private final List<Statement> statements;
     private final IEnvironmentGlobal environmentScript;
-    
+
     /**
      * Constructs and parses a given file.
      *
@@ -51,6 +51,7 @@ public class ZenParsedFile {
     public ZenParsedFile(String filename, String classname, ZenTokener tokener, IEnvironmentGlobal environment) {
         this.filename = filename;
         this.classname = classname;
+        this.tokener = tokener;
         
         imports = new ArrayList<>();
         functions = new HashMap<>();
@@ -124,13 +125,13 @@ public class ZenParsedFile {
                 if(globals.containsKey(value.getName())) {
                     environment.warning(value.getPosition(), "Global already defined: " + value.getName());
                 }
-                globals.put(value.getName(), value);
+                globals.put(value.getName().getValue(), value);
             } else if(next.getType() == T_FUNCTION) {
                 ParsedFunction function = ParsedFunction.parse(tokener, environmentScript);
                 if(functions.containsKey(function.getName())) {
-                    environment.error(function.getPosition(), "function " + function.getName() + " already exists");
+                    environment.error(function.getStart(), "function " + function.getName() + " already exists");
                 }
-                functions.put(function.getName(), function);
+                functions.put(function.getName().getValue(), function);
             } else if(next.getType() == T_ZEN_CLASS) {
                 ParsedZenClass parsedZenClass = ParsedZenClass.parse(tokener, environmentScript);
                 if(classes.containsKey(parsedZenClass.name))
@@ -167,7 +168,11 @@ public class ZenParsedFile {
     public String getFileName() {
         return filename;
     }
-    
+
+    public ZenTokener getTokener() {
+        return tokener;
+    }
+
     /**
      * Gets the imports list.
      *

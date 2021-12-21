@@ -7,7 +7,7 @@ import stanhebben.zenscript.util.ZenPosition;
  *
  * @author Stan Hebben
  */
-public class Token {
+public class Token implements Comparable<Token> {
     
     private final ZenPosition start;
     private final ZenPosition end;
@@ -41,6 +41,10 @@ public class Token {
         return end;
     }
 
+    public int getLength() {
+        return (end.getLine() - start.getLine()) + (end.getLineOffset() - start.getLineOffset());
+    }
+
     /**
      * Returns the string value of this token.
      *
@@ -63,4 +67,19 @@ public class Token {
     public String toString() {
         return start.getLine() + ":" + start.getLineOffset() + " (" + type + ") " + value;
     }
+
+    @Override
+    public int compareTo(Token o) {
+        int t1Line = this.getStart().getLine();
+        int t1Column = this.getStart().getLineOffset();
+        int t2Line = o.getStart().getLine();
+        int t2Column = o.getStart().getLineOffset();
+
+        if (t1Line != t2Line) {
+            return t1Line - t2Line;
+        } else {
+            return t1Column - t2Column;
+        }
+    }
+
 }

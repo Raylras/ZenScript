@@ -27,7 +27,7 @@ public class SymbolGlobalValue implements IZenSymbol {
     }
     
     public String getName() {
-        return value.getName();
+        return value.getName().getValue();
     }
     
     

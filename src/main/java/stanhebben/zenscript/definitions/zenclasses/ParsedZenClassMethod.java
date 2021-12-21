@@ -12,7 +12,6 @@ import stanhebben.zenscript.type.*;
 import stanhebben.zenscript.type.natives.*;
 import stanhebben.zenscript.util.MethodOutput;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -45,7 +44,7 @@ public class ParsedZenClassMethod {
                 type = ZenType.read(parser, classEnvironment);
             }
             
-            arguments.add(new ParsedFunctionArgument(argName.getValue(), type));
+            arguments.add(new ParsedFunctionArgument(argName, type));
             
             while(parser.optional(T_COMMA) != null) {
                 Token argName2 = parser.required(T_ID, "identifier expected");
@@ -54,7 +53,7 @@ public class ParsedZenClassMethod {
                     type2 = ZenType.read(parser, classEnvironment);
                 }
                 
-                arguments.add(new ParsedFunctionArgument(argName2.getValue(), type2));
+                arguments.add(new ParsedFunctionArgument(argName2, type2));
             }
             
             parser.required(T_BRCLOSE, ") expected");
@@ -68,19 +67,20 @@ public class ParsedZenClassMethod {
         parser.required(T_AOPEN, "{ expected");
         
         Statement[] statements;
+        Token tAClose = null;
         if(parser.optional(T_ACLOSE) != null) {
             statements = new Statement[0];
         } else {
             ArrayList<Statement> statementsAL = new ArrayList<>();
             
-            while(parser.optional(T_ACLOSE) == null) {
+            while((tAClose = parser.optional(T_ACLOSE)) == null) {
                 statementsAL.add(Statement.read(parser, classEnvironment, type));
             }
             statements = statementsAL.toArray(new Statement[statementsAL.size()]);
         }
         
         
-        return new ParsedZenClassMethod(new ParsedFunction(tName.getPosition(), tName.getValue(), arguments, type, statements), className);
+        return new ParsedZenClassMethod(new ParsedFunction(tName.getStart(), tAClose == null ? tName.getEnd() : tAClose.getEnd(), tName, arguments, type, statements), className);
     }
     
     public void addToMember(ZenNativeMember zenNativeMember) {
@@ -89,13 +89,13 @@ public class ParsedZenClassMethod {
     
     public void writeAll(ClassVisitor newClass, IEnvironmentClass environmentNewClass) {
         String description = method.getSignature();
-        MethodOutput methodOutput = new MethodOutput(newClass, Opcodes.ACC_PUBLIC, method.getName(), description, null, null);
+        MethodOutput methodOutput = new MethodOutput(newClass, Opcodes.ACC_PUBLIC, method.getName().getValue(), description, null, null);
         IEnvironmentMethod methodEnvironment = new EnvironmentMethod(methodOutput, environmentNewClass);
         
         List<ParsedFunctionArgument> arguments = method.getArguments();
         for(int i = 0, j = 0; i < arguments.size(); ) {
             ParsedFunctionArgument argument = arguments.get(i);
-            methodEnvironment.putValue(argument.getName(), new SymbolArgument(++i + j, argument.getType()), method.getPosition());
+            methodEnvironment.putValue(argument.getName().getValue(), new SymbolArgument(++i + j, argument.getType()), method.getStart());
             if(argument.getType().isLarge())
                 ++j;
         }
@@ -108,11 +108,11 @@ public class ParsedZenClassMethod {
         if(method.getReturnType() != ZenType.VOID) {
             if(statements.length != 0 && statements[statements.length - 1] instanceof StatementReturn) {
                 if(((StatementReturn) statements[statements.length - 1]).getExpression() != null) {
-                    method.getReturnType().defaultValue(method.getPosition()).compile(true, methodEnvironment);
+                    method.getReturnType().defaultValue(method.getStart()).compile(true, methodEnvironment);
                     methodOutput.returnType(method.getReturnType().toASMType());
                 }
             } else {
-                method.getReturnType().defaultValue(method.getPosition()).compile(true, methodEnvironment);
+                method.getReturnType().defaultValue(method.getStart()).compile(true, methodEnvironment);
                 methodOutput.returnType(method.getReturnType().toASMType());
             }
         } else if(statements.length == 0 || !(statements[statements.length - 1] instanceof StatementReturn)) {
@@ -155,7 +155,7 @@ public class ParsedZenClassMethod {
         
         @Override
         public void invokeVirtual(MethodOutput output) {
-            output.invokeVirtual(className, method.getName(), method.getSignature());
+            output.invokeVirtual(className, method.getName().getValue(), method.getSignature());
         }
         
         @Override
@@ -180,7 +180,7 @@ public class ParsedZenClassMethod {
         
         @Override
         public String getErrorDescription() {
-            final StringBuilder builder = new StringBuilder(method.getName()).append("(");
+            final StringBuilder builder = new StringBuilder(method.getName().getValue()).append("(");
             
             for(ZenType zenType : method.getArgumentTypes()) {
                 builder.append(zenType.toString()).append(", ");
